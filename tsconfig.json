@@ -9,15 +9,15 @@
         "esModuleInterop": true,
         "moduleResolution": "classic",
         "declaration": true,
-        "sourceMap": true,
+        "sourceMap": false,
         "strict": true,
         "outDir": "dist"
     },
     "include": [
-        "./src/**/*.ts"
-, "test/index.test.ts"    ],
+        "src/**/*.ts",
+    ],
     "exclude": [
-        "./src/**/*.test.ts",
+        "test",
         "dist",
         "node_modules"
     ]

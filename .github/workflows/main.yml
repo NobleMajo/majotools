@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -40,13 +39,15 @@ jobs:
         with:
           node-version: 14
           registry-url: https://registry.npmjs.org/
+          scope: '@halsmaulmajo'
       - name: Retrieve saved dist folder
         uses: actions/download-artifact@v2
         with:
           name: dist-artifact
           path: dist
       - run: npm ci --only=prod
-      - run: npm publish
+      - run: npm publish --access public
+      - run: git reset --hard
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
   publish-gpr:
@@ -61,12 +62,14 @@ jobs:
         with:
           node-version: 14
           registry-url: https://npm.pkg.github.com/
+          scope: '@halsmaulmajo'
       - name: Retrieve saved dist folder
         uses: actions/download-artifact@v2
         with:
           name: dist-artifact
           path: dist
       - run: npm ci --only=prod
-      - run: npm publish
+      - run: npm publish --access public
+      - run: git reset --hard
         env:
           NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
