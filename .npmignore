@@ -1,5 +1,4 @@
-src
-node_modules
-test
-tsconfig.json
-.gitignore
+./**/*
+!./package.json
+!./package-lock.json
+!./dist/**/*
