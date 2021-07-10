@@ -36,7 +36,7 @@ export function simplify(string: string): string {
     let charCode: number
     for (let index = 0; index < string.length; index++) {
         charCode = string.charCodeAt(index)
-        if (charCode != 32 && !isLowercaseAlphabeticCharCode(charCode) && !!isNumericCharCode(charCode)) {
+        if (charCode != 32 && !isLowercaseAlphabeticCharCode(charCode) && !isNumericCharCode(charCode)) {
             replace.push(string.charAt(index))
         }
     }
