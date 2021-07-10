@@ -95,13 +95,13 @@ describe('index.is*CharCode', () => {
 
 describe('index.simplify', () => {
     it('check simplify', () => {
-        expect(index.simplify("012/345.67!89")).is.equals("0123456789")
-        expect(index.simplify("7ztd3_4zwl-94t8 z3l_4z cw-l8tzlrt")).is.equals("7ztd3 4zwl 94t8 z3l 4z cw l8tzlrt")
+        expect(index.simplify("012/345.67!89")).is.equals("012-345-67-89")
+        expect(index.simplify("7ztd3_4zwl-94t8 z3l_4z cw-l8tzlrt")).is.equals("7ztd3-4zwl-94t8-z3l-4z-cw-l8tzlrt")
         expect(index.simplify("a")).is.equals("a")
-        expect(index.simplify("HelloMyNameIs Majo")).is.equals("hellomynameis majo")
-        expect(index.simplify("What's up?")).is.equals("whats up")
-        expect(index.simplify("mocha -r ts-node/register 'test/**/*.test.ts'")).is.equals("mocha  r ts noderegister testtestts")
-        expect(index.simplify("root@73cd0de4d28a:~/src# cd majotools/")).is.equals("root73cd0de4d28asrc cd majotools")
-        expect(index.simplify("-rw-r--r-- 1 root codec    0 Jul 10 16:18 README.md")).is.equals(" rw r  r   1 root codec    0 jul 10 1618 readmemd")
+        expect(index.simplify("HelloMyNameIs Majo")).is.equals("hellomynameis-majo")
+        expect(index.simplify("What's up?")).is.equals("what-s-up")
+        expect(index.simplify("mocha -r ts-node/register 'test/**/*.test.ts'")).is.equals("mocha-r-ts-node-register-test-test-ts")
+        expect(index.simplify("root@73cd0de4d28a:~/src# cd majotools/")).is.equals("root-73cd0de4d28a-src-cd-majotools")
+        expect(index.simplify("-rw-r--r-- 1 root codec    0 Jul 10 16:18 README.md")).is.equals("rw-r-r-1-root-codec-0-jul-10-16-18-readme-md")
     })
 })
