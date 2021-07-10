@@ -1,7 +1,7 @@
 {
-  "name": "majo-tools",
+  "name": "majotools",
   "version": "1.0.0",
-  "description": "A tools library for browser and nodejs developers",
+  "description": "A javascript&typescript library with basic constants, types, interfaces, function and classes.",
   "main": "dist/index.js",
   "scripts": {
     "compile": "tsc -p .",
