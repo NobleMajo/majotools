@@ -1,0 +1,21 @@
+{
+  "name": "majo-tools",
+  "version": "1.0.0",
+  "description": "A tools library for browser and nodejs developers",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha -r ts-node/register 'test/**/*.test.ts'"
+  },
+  "author": "HalsMaulMajo",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.2.21",
+    "@types/mocha": "^8.2.3",
+    "@types/node": "^16.3.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.0.2",
+    "nodemon": "^2",
+    "ts-node": "^10.1.0",
+    "typescript": "^4"
+  }
+}
