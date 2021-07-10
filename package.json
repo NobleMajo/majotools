@@ -4,7 +4,8 @@
   "description": "A tools library for browser and nodejs developers",
   "main": "dist/index.js",
   "scripts": {
-    "test": "./node_modules/mocha/bin/mocha -r ts-node/register 'test/**/*.test.ts'"
+    "compile": "tsc -p .",
+    "test": "mocha -r ts-node/register 'test/**/*.test.ts'"
   },
   "author": "HalsMaulMajo",
   "license": "MIT",
