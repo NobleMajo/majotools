@@ -37,3 +37,71 @@ describe('index.replaceAll', () => {
         expect(Number(result)).is.equals(123456789)
     })
 })
+
+describe('index.is*CharCode', () => {
+    it('check isAlphaNumericCharCode', () => {
+        expect(index.isAlphaNumericCharCode("a".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("r".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("z".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("3".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("9".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("0r".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("T".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("C".charCodeAt(0))).to.be.true
+        expect(index.isAlphaNumericCharCode("X".charCodeAt(0))).to.be.true
+
+        expect(index.isAlphaNumericCharCode("!".charCodeAt(0))).to.be.false
+        expect(index.isAlphaNumericCharCode(".".charCodeAt(0))).to.be.false
+        expect(index.isAlphaNumericCharCode("ß".charCodeAt(0))).to.be.false
+        expect(index.isAlphaNumericCharCode("Ö".charCodeAt(0))).to.be.false
+    })
+
+    it('check isUppercaseAlphabeticCharCode', () => {
+        expect(index.isUppercaseAlphabeticCharCode("B".charCodeAt(0))).to.be.true
+        expect(index.isUppercaseAlphabeticCharCode("G".charCodeAt(0))).to.be.true
+        expect(index.isUppercaseAlphabeticCharCode("U".charCodeAt(0))).to.be.true
+
+        expect(index.isUppercaseAlphabeticCharCode("f".charCodeAt(0))).to.be.false
+        expect(index.isUppercaseAlphabeticCharCode("!".charCodeAt(0))).to.be.false
+        expect(index.isUppercaseAlphabeticCharCode("Ö".charCodeAt(0))).to.be.false
+        expect(index.isUppercaseAlphabeticCharCode(";".charCodeAt(0))).to.be.false
+        expect(index.isUppercaseAlphabeticCharCode("5".charCodeAt(0))).to.be.false
+    })
+
+    it('check isLowercaseAlphabeticCharCode', () => {
+        expect(index.isLowercaseAlphabeticCharCode("a".charCodeAt(0))).to.be.true
+        expect(index.isLowercaseAlphabeticCharCode("h".charCodeAt(0))).to.be.true
+        expect(index.isLowercaseAlphabeticCharCode("y".charCodeAt(0))).to.be.true
+
+        expect(index.isLowercaseAlphabeticCharCode("R".charCodeAt(0))).to.be.false
+        expect(index.isLowercaseAlphabeticCharCode("!".charCodeAt(0))).to.be.false
+        expect(index.isLowercaseAlphabeticCharCode("ä".charCodeAt(0))).to.be.false
+        expect(index.isLowercaseAlphabeticCharCode(";".charCodeAt(0))).to.be.false
+        expect(index.isLowercaseAlphabeticCharCode("5".charCodeAt(0))).to.be.false
+    })
+
+    it('check isNumericCharCode', () => {
+        expect(index.isNumericCharCode("0".charCodeAt(0))).to.be.true
+        expect(index.isNumericCharCode("1".charCodeAt(0))).to.be.true
+        expect(index.isNumericCharCode("9".charCodeAt(0))).to.be.true
+
+        expect(index.isNumericCharCode("R".charCodeAt(0))).to.be.false
+        expect(index.isNumericCharCode("!".charCodeAt(0))).to.be.false
+        expect(index.isNumericCharCode("ä".charCodeAt(0))).to.be.false
+        expect(index.isNumericCharCode(";".charCodeAt(0))).to.be.false
+        expect(index.isNumericCharCode("j".charCodeAt(0))).to.be.false
+    })
+})
+
+describe('index.simplify', () => {
+    it('check simplify', () => {
+        expect(index.simplify("012/345.67!89")).is.equals("012-345-67-89")
+        expect(index.simplify("7ztd3_4zwl-94t8 z3l_4z cw-l8tzlrt")).is.equals("7ztd3-4zwl-94t8-z3l-4z-cw-l8tzlrt")
+        expect(index.simplify("a")).is.equals("a")
+        expect(index.simplify("HelloMyNameIs Majo")).is.equals("hellomynameis-majo")
+        expect(index.simplify("What's up?")).is.equals("what-s-up")
+        expect(index.simplify("mocha -r ts-node/register 'test/**/*.test.ts'")).is.equals("mocha-r-ts-node-register-test-test-ts")
+        expect(index.simplify("root@73cd0de4d28a:~/src# cd majotools/")).is.equals("root-73cd0de4d28a-src-cd-majotools")
+        expect(index.simplify("-rw-r--r-- 1 root codec    0 Jul 10 16:18 README.md")).is.equals("rw-r-r-1-root-codec-0-jul-10-16-18-readme-md")
+    })
+})
