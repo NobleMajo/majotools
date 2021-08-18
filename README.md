@@ -11,3 +11,5 @@ Rules for library content:
 ```sh
 npm i majotools
 ```
+
+# thanks
