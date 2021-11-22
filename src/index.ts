@@ -17,21 +17,21 @@ export function replaceAll(string: string, search: string | string[] | number | 
     return string
 }
 
-export function isAlphaNumericCharCode(charCode: number) {
+export function isAlphaNumericCharCode(charCode: number): boolean {
     return (charCode > 47 && charCode < 58) ||
         (charCode > 64 && charCode < 91) ||
         (charCode > 96 && charCode < 123)
 }
 
-export function isUppercaseAlphabeticCharCode(charCode: number) {
+export function isUppercaseAlphabeticCharCode(charCode: number): boolean {
     return (charCode > 64 && charCode < 91)
 }
 
-export function isLowercaseAlphabeticCharCode(charCode: number) {
+export function isLowercaseAlphabeticCharCode(charCode: number): boolean {
     return (charCode > 96 && charCode < 123)
 }
 
-export function isNumericCharCode(charCode: number) {
+export function isNumericCharCode(charCode: number): boolean {
     return (charCode > 47 && charCode < 58)
 }
 
@@ -61,13 +61,13 @@ export function simplify(string: string, baseReplacement: string | number = 45):
 }
 
 // JSON
-export type JsonBase = boolean | number | string | null
-export type JsonHolder = JsonArray | JsonObject
-export type JsonTypes = JsonBase | JsonHolder
-export type JsonArray = Array<JsonTypes>
-export type JsonObject = ObjectType<JsonTypes>
+export type JsonBase = boolean | number | string | null // Json primitive types
+export type JsonHolder = JsonArray | JsonObject // A json object or array
+export type JsonArray = Array<JsonTypes> // A array with just json type values
+export type JsonObject = ObjectType<JsonTypes> // A object with just json type values
+export type JsonTypes = JsonBase | JsonHolder // Can be every json type
 
-export interface ObjectType<V> {
+export interface ObjectType<V> { // Object that holds the generec type as values
     [key: string]: V
 }
 
@@ -118,15 +118,15 @@ export function polishValues<T extends JsonHolder>(holder: T, recursive: boolean
     return holder
 }
 
-// INTERPRETER
+// RUNTIME ENVIRONMENT
 let environmentCache: "browser" | "electron" | "node" | "unknown" | null = null
 
 /**
  * 
- * @description Cache and return the type of the interpreter environment.
+ * @description Cache and return the type of the runtime environment.
  * @returns Some of this string values "browser", "electron", "node" or "unknown"
  */
-export function interpreter(): "browser" | "electron" | "node" | "unknown" {
+export function runtimeEnvironment(): "browser" | "electron" | "node" | "unknown" {
     if (environmentCache != null) {
         return environmentCache
     }
@@ -304,9 +304,9 @@ export function getEndpointById(id: string): EndPoint {
 export const statusCodeMap: { [key: number]: HttpStatus } = {
     '100': { code: 100, message: 'Continue', simple: 'continue' },
     '101': {
-      code: 101,
-      message: 'Switching Protocol',
-      simple: 'switching-protocol'
+        code: 101,
+        message: 'Switching Protocol',
+        simple: 'switching-protocol'
     },
     '102': { code: 102, message: 'Processing', simple: 'processing' },
     '103': { code: 103, message: 'Early Hints', simple: 'early-hints' },
@@ -314,25 +314,25 @@ export const statusCodeMap: { [key: number]: HttpStatus } = {
     '201': { code: 201, message: 'Created', simple: 'created' },
     '202': { code: 202, message: 'Accepted', simple: 'accepted' },
     '203': {
-      code: 203,
-      message: 'Non-Authoritative Information',
-      simple: 'non-authoritative-information'
+        code: 203,
+        message: 'Non-Authoritative Information',
+        simple: 'non-authoritative-information'
     },
     '204': { code: 204, message: 'No Content', simple: 'no-content' },
     '205': { code: 205, message: 'Reset Content', simple: 'reset-content' },
     '206': { code: 206, message: 'Partial Content', simple: 'partial-content' },
     '207': { code: 207, message: 'Multi-Status', simple: 'multi-status' },
     '208': {
-      code: 208,
-      message: 'Already Reported',
-      simple: 'already-reported'
+        code: 208,
+        message: 'Already Reported',
+        simple: 'already-reported'
     },
     '226': { code: 226, message: 'IM Used', simple: 'im-used' },
     '300': { code: 300, message: 'Multiple Choice', simple: 'multiple-choice' },
     '301': {
-      code: 301,
-      message: 'Moved Permanently',
-      simple: 'moved-permanently'
+        code: 301,
+        message: 'Moved Permanently',
+        simple: 'moved-permanently'
     },
     '302': { code: 302, message: 'Found', simple: 'found' },
     '303': { code: 303, message: 'See Other', simple: 'see-other' },
@@ -340,150 +340,151 @@ export const statusCodeMap: { [key: number]: HttpStatus } = {
     '305': { code: 305, message: 'Use Proxy', simple: 'use-proxy' },
     '306': { code: 306, message: 'unused', simple: 'unused' },
     '307': {
-      code: 307,
-      message: 'Temporary Redirect',
-      simple: 'temporary-redirect'
+        code: 307,
+        message: 'Temporary Redirect',
+        simple: 'temporary-redirect'
     },
     '308': {
-      code: 308,
-      message: 'Permanent Redirect',
-      simple: 'permanent-redirect'
+        code: 308,
+        message: 'Permanent Redirect',
+        simple: 'permanent-redirect'
     },
     '400': { code: 400, message: 'Bad Request', simple: 'bad-request' },
     '401': { code: 401, message: 'Unauthorized', simple: 'unauthorized' },
     '402': {
-      code: 402,
-      message: 'Payment Required',
-      simple: 'payment-required'
+        code: 402,
+        message: 'Payment Required',
+        simple: 'payment-required'
     },
     '403': { code: 403, message: 'Forbidden', simple: 'forbidden' },
     '404': { code: 404, message: 'Not Found', simple: 'not-found' },
     '405': {
-      code: 405,
-      message: 'Method Not Allowed',
-      simple: 'method-not-allowed'
+        code: 405,
+        message: 'Method Not Allowed',
+        simple: 'method-not-allowed'
     },
     '406': { code: 406, message: 'Not Acceptable', simple: 'not-acceptable' },
     '407': {
-      code: 407,
-      message: 'Proxy Authentication Required',
-      simple: 'proxy-authentication-required'
+        code: 407,
+        message: 'Proxy Authentication Required',
+        simple: 'proxy-authentication-required'
     },
     '408': { code: 408, message: 'Request Timeout', simple: 'request-timeout' },
     '409': { code: 409, message: 'Conflict', simple: 'conflict' },
     '410': { code: 410, message: 'Gone', simple: 'gone' },
     '411': { code: 411, message: 'Length Required', simple: 'length-required' },
     '412': {
-      code: 412,
-      message: 'Precondition Failed',
-      simple: 'precondition-failed'
+        code: 412,
+        message: 'Precondition Failed',
+        simple: 'precondition-failed'
     },
     '413': {
-      code: 413,
-      message: 'Payload Too Large',
-      simple: 'payload-too-large'
+        code: 413,
+        message: 'Payload Too Large',
+        simple: 'payload-too-large'
     },
     '414': { code: 414, message: 'URI Too Long', simple: 'uri-too-long' },
     '415': {
-      code: 415,
-      message: 'Unsupported Media Type',
-      simple: 'unsupported-media-type'
+        code: 415,
+        message: 'Unsupported Media Type',
+        simple: 'unsupported-media-type'
     },
     '416': {
-      code: 416,
-      message: 'Range Not Satisfiable',
-      simple: 'range-not-satisfiable'
+        code: 416,
+        message: 'Range Not Satisfiable',
+        simple: 'range-not-satisfiable'
     },
     '417': {
-      code: 417,
-      message: 'Expectation Failed',
-      simple: 'expectation-failed'
+        code: 417,
+        message: 'Expectation Failed',
+        simple: 'expectation-failed'
     },
     '418': { code: 418, message: "I'm a teapot", simple: 'i-m-a-teapot' },
     '421': {
-      code: 421,
-      message: 'Misdirected Request',
-      simple: 'misdirected-request'
+        code: 421,
+        message: 'Misdirected Request',
+        simple: 'misdirected-request'
     },
     '422': {
-      code: 422,
-      message: 'Unprocessable Entity',
-      simple: 'unprocessable-entity'
+        code: 422,
+        message: 'Unprocessable Entity',
+        simple: 'unprocessable-entity'
     },
     '423': { code: 423, message: 'Locked', simple: 'locked' },
     '424': {
-      code: 424,
-      message: 'Failed Dependency',
-      simple: 'failed-dependency'
+        code: 424,
+        message: 'Failed Dependency',
+        simple: 'failed-dependency'
     },
     '425': { code: 425, message: 'Too Early', simple: 'too-early' },
     '426': {
-      code: 426,
-      message: 'Upgrade Required',
-      simple: 'upgrade-required'
+        code: 426,
+        message: 'Upgrade Required',
+        simple: 'upgrade-required'
     },
     '428': {
-      code: 428,
-      message: 'Precondition Required',
-      simple: 'precondition-required'
+        code: 428,
+        message: 'Precondition Required',
+        simple: 'precondition-required'
     },
     '429': {
-      code: 429,
-      message: 'Too Many Requests',
-      simple: 'too-many-requests'
+        code: 429,
+        message: 'Too Many Requests',
+        simple: 'too-many-requests'
     },
     '431': {
-      code: 431,
-      message: 'Request Header Fields Too Large',
-      simple: 'request-header-fields-too-large'
+        code: 431,
+        message: 'Request Header Fields Too Large',
+        simple: 'request-header-fields-too-large'
     },
     '451': {
-      code: 451,
-      message: 'Unavailable For Legal Reasons',
-      simple: 'unavailable-for-legal-reasons'
+        code: 451,
+        message: 'Unavailable For Legal Reasons',
+        simple: 'unavailable-for-legal-reasons'
     },
     '500': {
-      code: 500,
-      message: 'Internal Server Error',
-      simple: 'internal-server-error'
+        code: 500,
+        message: 'Internal Server Error',
+        simple: 'internal-server-error'
     },
     '501': { code: 501, message: 'Not Implemented', simple: 'not-implemented' },
     '502': { code: 502, message: 'Bad Gateway', simple: 'bad-gateway' },
     '503': {
-      code: 503,
-      message: 'Service Unavailable',
-      simple: 'service-unavailable'
+        code: 503,
+        message: 'Service Unavailable',
+        simple: 'service-unavailable'
     },
     '504': { code: 504, message: 'Gateway Timeout', simple: 'gateway-timeout' },
     '505': {
-      code: 505,
-      message: 'HTTP Version Not Supported',
-      simple: 'http-version-not-supported'
+        code: 505,
+        message: 'HTTP Version Not Supported',
+        simple: 'http-version-not-supported'
     },
     '506': {
-      code: 506,
-      message: 'Variant Also Negotiates',
-      simple: 'variant-also-negotiates'
+        code: 506,
+        message: 'Variant Also Negotiates',
+        simple: 'variant-also-negotiates'
     },
     '507': {
-      code: 507,
-      message: 'Insufficient Storage',
-      simple: 'insufficient-storage'
+        code: 507,
+        message: 'Insufficient Storage',
+        simple: 'insufficient-storage'
     },
     '508': { code: 508, message: 'Loop Detected', simple: 'loop-detected' },
     '510': { code: 510, message: 'Not Extended', simple: 'not-extended' },
     '511': {
-      code: 511,
-      message: 'Network Authentication Required',
-      simple: 'network-authentication-required'
+        code: 511,
+        message: 'Network Authentication Required',
+        simple: 'network-authentication-required'
     }
-  }
+}
 
 export const statusCodeList: HttpStatus[] = Object.values(statusCodeMap)
 
 export type LowerHttpMethods = "get" | "post" | "put" | "delete" | "trace" | "connect" | "head" | "options" | "patch"
 export type UpperHttpMethods = "GET" | "POST" | "PUT" | "DELETE" | "TRACE" | "CONNECT" | "HEAD" | "OPTIONS" | "PATCH"
 export type HttpMethods = LowerHttpMethods | UpperHttpMethods
+export const httpMethods = ["get", "post", "put", "delete", "trace", "connect", "head", "options", "patch"]
 
 export interface HttpHeader {
     [key: string]: string | string[]
@@ -501,6 +502,10 @@ export function getLowerHttpMethod(methods: HttpMethods): LowerHttpMethods {
 
 export function getUpperHttpMethod(methods: HttpMethods): UpperHttpMethods {
     return methods.toUpperCase() as UpperHttpMethods
+}
+
+export function isHttpMethod(method: string): boolean {
+    return httpMethods.includes(method.toLowerCase())
 }
 
 export function splitHeader(allHeader: string | null | undefined): HttpHeader {
