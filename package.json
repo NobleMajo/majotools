@@ -1,7 +1,7 @@
 {
   "name": "majotools",
   "displayName": "MajoTools",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A javascript&typescript library with basic constants, types, interfaces, function and classes.",
   "main": "dist/index.js",
   "scripts": {
