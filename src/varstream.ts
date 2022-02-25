@@ -1,3 +1,17 @@
+export interface VarDuplex<I, O> {
+    in: VarInputStream<I>,
+    out: VarOutputStream<O>,
+}
+
+export function createVarDuplex<I, O>(
+    inStream: VarInputStream<I>,
+    outStrean: VarOutputStream<O>
+): VarDuplex<I, O> {
+    return {
+        in: inStream,
+        out: outStrean,
+    }
+}
 
 export interface StreamDataMeta {
     [key: string]: any

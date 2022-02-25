@@ -13,15 +13,15 @@
 - [about](#about)
 - [getting started](#getting-started)
 - [examples](#examples)
-  - [number functions](#number-functions)
+  - [node](#node)
+  - [string functions](#string-functions)
   - [json types and function](#json-types-and-function)
-  - [runtime environment](#runtime-environment)
   - [ip functions](#ip-functions)
   - [http status and methods](#http-status-and-methods)
 - [contribution](#contribution)
 
 # about
-This library provides constants, types, function, interfaces and classes for node and dom interpreters.  
+This library provides constants, types, function, interfaces and classes for nodejs.  
 Rules for library content:
 - Content should not depend on other packages.
 
@@ -33,7 +33,13 @@ npm i majotools
 
 # examples
 
-## number functions
+## node
+```ts
+import { node } from "majotools"
+node.node()
+```
+
+## string functions
 ```ts
 export function isAlphaNumericCharCode(charCode: number): boolean
 export function isUppercaseAlphabeticCharCode(charCode: number): boolean
@@ -57,11 +63,6 @@ export function polishValues<T extends JsonHolder>(
     holder: T,
     recursive: boolean = true
     ): T
-```
-
-## runtime environment
-```ts
-export function runtimeEnvironment(): "browser" | "electron" | "node" | "unknown"
 ```
 
 ## ip functions

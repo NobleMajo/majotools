@@ -131,3 +131,4 @@ export function shell(
     return varStream.getInputVarStream()
 }
 
+export default shell

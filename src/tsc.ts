@@ -1,8 +1,8 @@
 import { ShellOptions } from './shell';
 import { NodeOptions, node } from './node';
-import { LogType } from './varstream';
+import { LogType, VarDuplex } from './varstream';
 
-export type esModule = 'none' | 'commonjs' | 'amd' | 'system' | 'umd' | 'es2015' | 'ESNext'
+export type esModule = 'none' | 'commonjs' | 'amd' | 'system' | 'umd' | 'es2015' | 'ESNext' | string
 export type esLib = 'es5' | 'es6' | 'es2015' | 'es7' | 'es2016' | 'es2017' | 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'esnext' | 'dom' | string
 export type esTarget = 'es3' | 'es5' | 'es6' | 'es2015' | 'es2016' | 'es2017' | 'es2018' | 'es2019' | 'es2020' | 'es2021' | 'esnext' | string
 
@@ -107,7 +107,7 @@ export const defaultCompileSettings: CompileSettings = {
 
 export function tsc(
     options: CompileOptions,
-): VarInputStream<LogType<Buffer>> {
+): VarDuplex<LogType<Buffer>, Buffer> {
     const settings: CompileSettings = {
         ...defaultCompileSettings,
         ...options
@@ -226,68 +226,4 @@ export function tsc(
     )
 }
 
-export function rmJsFileByTsFile(
-    tsPath: string,
-    tsSuffix: string = ".ts",
-    jsSuffix: string = ".js"
-): Promise<void> {
-    return new Promise<void>((res, rej) => {
-        if (tsPath.endsWith(tsSuffix)) {
-            tsPath = tsPath.slice(0, -3)
-        }
-        fs.rm(tsPath + jsSuffix, (err) => {
-            if (err) {
-                return rej(err)
-            }
-            res()
-        })
-    })
-}
-
-const bin = process.env["_"].toLowerCase()
-export const isTsNode: boolean | undefined = bin.includes("tsnode") || bin.includes("ts-node")
-
-export interface TsNodeOptions extends NodeOptions {
-    pipeEnv?: boolean,
-    timeoutMillis?: number,
-    tsNodePath?: string
-}
-
-export interface TsNodeSettings extends TsNodeOptions {
-    pipeEnv: boolean,
-    timeoutMillis: number
-    tsNodePath: string
-}
-
-export const defaultTsNodeSettings: TsNodeSettings = {
-    pipeEnv: false,
-    timeoutMillis: defaultCmdTimeout,
-    tsNodePath: "node_modules/ts-node/dist/bin.js"
-}
-
-export function tsnode(
-    script: string,
-    args: string[],
-    options?: TsNodeOptions
-): VarInputStream<LogType<Buffer>> {
-    const settings: TsNodeSettings = {
-        ...defaultTsNodeSettings,
-        ...options,
-    }
-
-    if (settings.pipeEnv) {
-        settings.env = {
-            ...process.env,
-            ...settings.env
-        }
-    }
-
-    return node(
-        settings.tsNodePath,
-        [
-            script,
-            ...args
-        ],
-        settings
-    )
-}
+export default tsc

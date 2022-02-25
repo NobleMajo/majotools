@@ -1,7 +1,7 @@
 
 import { fork, ForkOptions } from "child_process"
 import process = require("process")
-import { LogType, VarInputStream, VarStream } from "./varstream"
+import { LogType, VarStream, VarDuplex, createVarDuplex } from './varstream';
 
 export interface NodeOptions extends ForkOptions {
     pipeEnv?: boolean,
@@ -22,21 +22,19 @@ export function node(
     script: string,
     args: string[],
     options?: NodeOptions
-): VarInputStream<LogType<Buffer>> {
+): VarDuplex<LogType<Buffer>, Buffer> {
     const settings: NodeSettings = {
         ...defaultNodeSettings,
         ...options,
     }
-
     if (settings.pipeEnv) {
         settings.env = {
             ...process.env,
             ...settings.env
         }
     }
-
-    const logStream = new VarStream<LogType<Buffer>>()
-    const writeStream = new VarStream<LogType<Buffer>>()
+    const inStream = new VarStream<LogType<Buffer>>()
+    const outStream = new VarStream<Buffer>()
     const task = fork(
         script,
         args,
@@ -49,13 +47,10 @@ export function node(
     if (settings.timeoutMillis > 0) {
         timeout = setTimeout(
             () => {
-                if (varStream.isClosed()) {
-                    return
-                }
                 if (timeout) {
                     clearTimeout(timeout)
                 }
-                varStream.end(
+                outStream.end(
                     new Error(
                         "Timeout for command 'node " +
                         script +
@@ -68,54 +63,64 @@ export function node(
             settings.timeoutMillis
         )
     }
-    if (task.stdout) {
-        task.stdout.on(
-            'data',
-            (data: Buffer | string) => {
-                if (!(data instanceof Buffer)) {
-                    data = Buffer.from(data)
-                }
-                varStream.write([false, data])
-            }
-        )
+    if (!task.stdout) {
+        throw new Error("No 'stdout' for fork found")
     }
-    if (task.stderr) {
-        task.stderr.on(
-            'data',
-            (data: Buffer | string) => {
-                if (!(data instanceof Buffer)) {
-                    data = Buffer.from(data)
-                }
-                varStream.write([false, data])
+    task.stdout.on(
+        'data',
+        (data: Buffer | string) => {
+            if (!(data instanceof Buffer)) {
+                data = Buffer.from(data)
             }
-        )
+            inStream.write([false, data])
+        }
+    )
+    if (!task.stderr) {
+        throw new Error("No 'stderr' for fork found")
     }
+    task.stderr.on(
+        'data',
+        (data: Buffer | string) => {
+            if (!(data instanceof Buffer)) {
+                data = Buffer.from(data)
+            }
+            inStream.write([false, data])
+        }
+    )
+    if (!task.stdin) {
+        throw new Error("No 'stdin' for fork found")
+    }
+    outStream.forEach((buf) => task.stdin?.write(
+        buf,
+        (err) => err && outStream.end(err)
+    ))
+    outStream.finally((meta) => task.stdin?.end(meta.err))
     task.on(
         "error",
         (err) => {
-            if (varStream.isClosed()) {
-                return
-            }
             if (timeout) {
                 clearTimeout(timeout)
             }
-            varStream.end(err)
+            inStream.end(err)
+            outStream.end()
         }
     )
     task.on(
         'close',
         (code) => {
-            if (varStream.isClosed()) {
-                return
-            }
             if (timeout) {
                 clearTimeout(timeout)
             }
-            varStream.end(undefined, {
+            inStream.end(undefined, {
                 code: code
             })
+            outStream.end()
         }
     )
-    return varStream
+    return createVarDuplex(
+        inStream.getInputVarStream(),
+        outStream.getOutputVarStream(),
+    )
 }
 
+export default node

@@ -1,10 +1,13 @@
-import * as fs from "fs"
+import { promises as fs, statSync, watch } from "fs"
 import * as path from "path"
 import * as os from "os"
-import { JsonType } from "./JSON"
 import { VarInputStream, VarStream } from "./varstream"
+import { JsonTypes } from "./json"
 
-export function getAbsolutePath(filePath: string, cwd: string = process.cwd()): string {
+export function getAbsolutePath(
+    filePath: string,
+    cwd: string = process.cwd()
+): string {
     filePath = filePath.split("\\").join("/")
     if (os.platform() == "win32") {
         if (filePath[1] != ":" && filePath[2] != "/") {
@@ -22,23 +25,24 @@ export function getAbsolutePath(filePath: string, cwd: string = process.cwd()): 
     return path.normalize(filePath)
 }
 
-export function getFileType(filePath: string): Promise<"FILE" | "DIR" | "NONE"> {
-    return new Promise<"FILE" | "DIR" | "NONE">((res, rej) => fs.stat(filePath, (err, state) => {
-        if (err) {
-            res("NONE")
-        } else if (state.isDirectory()) {
-            res("DIR")
-        } else if (state.isFile()) {
-            res("FILE")
+export async function getFileType(filePath: string): Promise<"FILE" | "DIR" | "NONE"> {
+    try {
+        const stat = await fs.stat(filePath)
+        if (stat.isDirectory()) {
+            return "DIR"
+        } else if (stat.isFile()) {
+            return "FILE"
         } else {
-            res("NONE")
+            return "NONE"
         }
-    }))
+    } catch (error) {
+        return "NONE"
+    }
 }
 
 export function getFileTypeSync(filePath: string): "FILE" | "DIR" | "NONE" {
     try {
-        const state = fs.statSync(filePath)
+        const state = statSync(filePath)
         if (state.isDirectory()) {
             return "DIR"
         } else if (state.isFile()) {
@@ -51,51 +55,34 @@ export function getFileTypeSync(filePath: string): "FILE" | "DIR" | "NONE" {
     }
 }
 
-export function readFile(filePath: string): Promise<string> {
-    return new Promise<string>((res, rej) => fs.readFile(filePath, (err, content) => {
-        if (err) {
-            return rej(err)
+export async function readJson(
+    filePath: string,
+    encoding: BufferEncoding = "utf8"
+): Promise<JsonTypes> {
+    return JSON.parse(await fs.readFile(
+        filePath,
+        {
+            encoding: encoding
         }
-        res(content.toString("utf-8"))
-    }))
+    ).toString())
 }
 
-export function writeFile(filePath: string, content: string): Promise<void> {
-    return new Promise<void>((res, rej) => fs.writeFile(filePath, content, (err) => {
-        if (err) {
-            return rej(err)
-        }
-        res()
-    }))
-}
-
-export function readJson(filePath: string): Promise<JsonType> {
-    return new Promise<string>((res, rej) => fs.readFile(filePath, (err, content) => {
-        if (err) {
-            return rej(err)
-        }
-        try {
-            res(JSON.parse(content.toString("utf-8")))
-        } catch (err) {
-            rej(err)
-        }
-    }))
-}
-
-export function writeJson(filePath: string, data: JsonType, pretty: boolean = true): Promise<void> {
-    return new Promise<void>((res, rej) => fs.writeFile(
+export async function writeJson(
+    filePath: string,
+    data: JsonTypes,
+    pretty: boolean = true,
+    encoding: BufferEncoding = "utf8"
+): Promise<void> {
+    return await fs.writeFile(
         filePath,
         pretty ? JSON.stringify(data, null, 4) : JSON.stringify(data),
-        (err) => {
-            if (err) {
-                return rej(err)
-            }
-            res()
-        }
-    ))
+        { encoding: encoding }
+    )
 }
 
-export function watchChanges(filePath: string): VarInputStream<string> {
+export function watchChanges(
+    filePath: string
+): VarInputStream<string> {
     const varstream = new VarStream<string>()
     getFileType(filePath).then((type) => {
         if (varstream.isClosed()) {
@@ -104,7 +91,7 @@ export function watchChanges(filePath: string): VarInputStream<string> {
         if (type == "NONE") {
             throw new Error("Can't watch something that not exists!")
         }
-        const watcher = fs.watch(
+        const watcher = watch(
             filePath,
             {
                 recursive: type == "DIR",

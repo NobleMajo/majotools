@@ -1,7 +1,7 @@
 import "mocha"
 import { expect } from 'chai';
 
-import * as index from "../src/index"
+import * as index from "../index"
 
 describe('index.replaceAll', () => {
     it('check replaceAll with small word', () => {

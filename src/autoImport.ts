@@ -1,5 +1,7 @@
 import { CompileOptions, tsc } from './tsc';
 import { getFileType } from './fs';
+import { fixPath } from '../../cprox/src/certs';
+import fs from "fs"
 
 export interface ImportModuleOptions extends CompileOptions {
     tsConfigName?: string | null,
@@ -57,9 +59,10 @@ export async function autoImport(
                 let errorLines: string = ""
                 const paths = await tsc({
                     ...options,
-                    project: toAbsolutePath(importPath + "/" + settings.tsConfigName),
+                    project: fixPath(importPath + "/" + settings.tsConfigName),
                     listEmittedFiles: true,
                 })
+                    .in
                     .spread((logs) => {
                         const logLine = "" + logs[1]
                         return logLine.split("\n").map((v) => {
@@ -72,26 +75,36 @@ export async function autoImport(
                             return v.length == 0 ? undefined : v
                         })
                     })
-                    .map((line: string) => {
-                        if (
-                            line.startsWith("TSFILE: ") &&
-                            line.endsWith(settings.jsSuffix)
-                        ) {
-                            return line.substring(8)
-                        } else if (line.includes(" error ")) {
-                            errorLines += "\n" + line
+                    .map((line) => {
+                        if (line) {
+                            if (
+                                line.startsWith("TSFILE: ") &&
+                                (
+                                    line.endsWith(settings.jsSuffix ?? ".js") ||
+                                    line.endsWith(".js")
+                                )
+                            ) {
+                                return line.substring(8)
+                            } else if (line.includes(" error ")) {
+                                errorLines += "\n" + line
+                            }
                         }
                         return undefined
                     })
+                    .filter((v) => v != undefined)
+                    .map((line) => "" + line)
                     .bufferValues()
 
                 del = () => Promise.all(
-                    paths.map((path) => new Promise<void>((res, rej) => fs.rm(
-                        path,
-                        (err) => err ? rej(err) : res()
-                    ))
+                    paths.map(
+                        (path) => new Promise<void>(
+                            (res, rej) => fs.rm(
+                                path,
+                                (err: Error | any) => err ? rej(err) : res()
+                            )
+                        )
                     )
-                ) as any
+                ).then()
 
                 if (paths.length == 0) {
                     if (errorLines.length > 0) {
@@ -125,9 +138,7 @@ export async function autoImport(
         } catch (err) {
 
         }
-
     }
-
 
     if (settings.allowJson) {
         if (
@@ -282,3 +293,5 @@ export async function autoImport(
         }
     }
 }
+
+export default autoImport
