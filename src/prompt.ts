@@ -1,5 +1,5 @@
+import { allToString } from './string';
 import { VarInputStream, VarStream } from './varstream';
-import { allToString } from '../../typenvy/src/index';
 
 export interface PromptOptions {
     before?: ((settings: PromptSettings) => Promise<void> | void) | string | undefined,

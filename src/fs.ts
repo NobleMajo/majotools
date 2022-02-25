@@ -4,7 +4,7 @@ import * as os from "os"
 import { VarInputStream, VarStream } from "./varstream"
 import { JsonTypes } from "./json"
 
-export function getAbsolutePath(
+export function toAbsolutePath(
     filePath: string,
     cwd: string = process.cwd()
 ): string {
@@ -14,10 +14,10 @@ export function getAbsolutePath(
             if (!filePath.startsWith("/")) {
                 filePath = "/" + filePath
             }
-            filePath = process.cwd() + filePath
+            filePath = cwd + filePath
         }
     } else if (!filePath.startsWith("/")) {
-        filePath = process.cwd() + "/" + filePath
+        filePath = cwd + "/" + filePath
     }
     while (filePath.includes("//")) {
         filePath = filePath.split("//").join("/")
