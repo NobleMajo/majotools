@@ -1,7 +1,7 @@
 {
   "name": "majotools",
   "description": "A javascript&typescript library with basic constants, types, interfaces, function and classes.",
-  "version": "1.2.4",
+  "version": "1.2.7",
   "main": "dist/index.js",
   "author": "majo418",
   "license": "MIT",
