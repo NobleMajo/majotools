@@ -50,7 +50,7 @@ export async function prompt(
         if (typeof settings.before == "function") {
             await settings.before(settings)
         } else if (typeof settings.before == "string") {
-            console.log(settings.before)
+            console.info(settings.before)
         }
         if (settings.clearBuffer) {
             textBuffer = ""
