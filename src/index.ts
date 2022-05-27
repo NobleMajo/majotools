@@ -11,7 +11,16 @@ import * as tsc from "./tsc"
 import * as tsnode from "./tsnode"
 import * as varstream from "./varstream"
 
+import * as cache from "./cache"
+import * as cookieParser from "./cookieParser"
+import * as basicAuth from "./basicAuth"
+import * as httpMiddleware from "./httpMiddleware"
+
 export default {
+    cache: cache,
+    cookieParser: cookieParser,
+    basicAuth: basicAuth,
+    httpMiddleware: httpMiddleware,
     fs: fs,
     git: git,
     json: json,
