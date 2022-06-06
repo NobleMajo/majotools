@@ -72,7 +72,7 @@ export function cookieParserMiddleware(
         ...defaultCookieParserSettings,
         ...options,
     }
-    return (req, res) => {
+    return (req, res, next) => {
         req.cookies = parseCookies(req.headers["cookie"] ?? "")
         res.cookies = {}
         res.setCookies = settings.autoSetCookies
@@ -107,7 +107,7 @@ export function cookieParserMiddleware(
             },
             1
         )
-        return false
+        next()
     }
 }
 

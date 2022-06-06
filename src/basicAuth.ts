@@ -17,7 +17,7 @@ export function createHttpBasicAuthMiddleware(
             'WWW-Authenticate': 'Basic realm="401"',
         },
 ): HttpMiddleware {
-    return async (req, res) => {
+    return async (req, res, next) => {
         let username = req.cookies.username ?? req.cookies.user ??
             req.headers.username ?? req.headers.user
         let password = req.cookies.passhash ?? req.cookies.password ??
@@ -62,7 +62,8 @@ export function createHttpBasicAuthMiddleware(
             typeof password == "string" &&
             await correctCredentials(username, password, req, res)
         ) {
-            return false
+            next()
+            return
         }
         res.writeHead(
             401,
@@ -71,8 +72,6 @@ export function createHttpBasicAuthMiddleware(
         if (typeof message == "string") {
             res.write(message)
         }
-        return true
-
     }
 }
 

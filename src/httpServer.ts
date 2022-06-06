@@ -1,23 +1,41 @@
 import {
+    RequestListener,
+    IncomingMessage,
     Server as HttpServer,
     ServerOptions as HttpServerOptions,
     createServer as createHttpServer,
-
+    ServerResponse,
 } from "http"
 import {
-    RequestListener,
-    IncomingMessage,
     Server as HttpsServer,
     ServerOptions as HttpsServerOptions,
     createServer as createHttpsServer
 } from "https"
 import { Duplex } from "stream"
 import {
+    Awaitable,
     HttpMiddleware,
     WsMiddleware
 } from './httpMiddleware';
 
-export type UpgradeListener = (req: IncomingMessage, socket: Duplex, head: Buffer) => void
+export type UpgradeListener = (
+    req: IncomingMessage,
+    socket: Duplex,
+    head: Buffer
+) => Awaitable<void>
+
+export type HttpErrorHandler = (
+    err: Error,
+    req: IncomingMessage,
+    res: ServerResponse,
+) => Awaitable<void>
+
+export type WsErrorHandler = (
+    err: Error,
+    req: IncomingMessage,
+    socket: Duplex,
+    head: Buffer,
+) => Awaitable<void>
 
 export interface BaseHttpServerOptions {
     port?: number,
@@ -32,6 +50,8 @@ export interface BaseHttpServerOptions {
     serverOptions?: HttpServerOptions & HttpsServerOptions,
     httpServerOptions?: HttpServerOptions,
     httpsServerOptions?: HttpsServerOptions,
+    httpErrorHandler?: HttpErrorHandler,
+    wsErrorHandler?: WsErrorHandler,
 }
 
 export interface BaseHttpServerSettings {
@@ -47,6 +67,8 @@ export interface BaseHttpServerSettings {
     serverOptions: HttpServerOptions & HttpsServerOptions,
     httpServerOptions?: HttpServerOptions,
     httpsServerOptions?: HttpsServerOptions,
+    httpErrorHandler: HttpErrorHandler,
+    wsErrorHandler: WsErrorHandler,
 }
 
 export const defaultBaseHttpServerSettings: BaseHttpServerSettings = {
@@ -62,6 +84,8 @@ export const defaultBaseHttpServerSettings: BaseHttpServerSettings = {
     serverOptions: {},
     httpServerOptions: undefined,
     httpsServerOptions: undefined,
+    httpErrorHandler: (err) => console.error("Http server error: ", err),
+    wsErrorHandler: (err) => console.error("WebSocket server error: ", err),
 }
 
 export interface BaseHttpServer {
@@ -78,11 +102,59 @@ export async function createBaseHttpServer(
         ...options,
     }
 
-    const requestListener: RequestListener = (req, res) => {
-
+    const requestListener: RequestListener = async (req, res) => {
+        try {
+            if (!settings.httpMiddleware || settings.httpMiddleware.length == 0) {
+                throw new Error("Http request but no http middleware is defined!")
+            }
+            for (const middleware of settings.httpMiddleware) {
+                await new Promise<void>(
+                    (resolve, reject) => middleware(
+                        req,
+                        res,
+                        (err) => err ? reject(err) : resolve()
+                    )
+                )
+            }
+        } catch (err) {
+            try {
+                if (res.headersSent != true) {
+                    res.writeHead(500, "Internal Server Error")
+                }
+            } catch (err) { }
+            try {
+                req.destroy()
+            } catch (err) { }
+            try {
+                res.destroy()
+            } catch (err) { }
+            settings.httpErrorHandler(err, req, res)
+        }
     }
-    const upgradeListener: UpgradeListener = (req, sock, buf) => {
-
+    const upgradeListener: UpgradeListener = async (req, sock, head) => {
+        try {
+            if (!settings.wsMiddleware || settings.wsMiddleware.length == 0) {
+                throw new Error("Websocket connection but no websocket middleware is defined!")
+            }
+            for (const middleware of settings.wsMiddleware) {
+                await new Promise<void>(
+                    (resolve, reject) => middleware(
+                        req,
+                        sock,
+                        head,
+                        (err) => err ? reject(err) : resolve()
+                    )
+                )
+            }
+        } catch (err) {
+            try {
+                req.destroy()
+            } catch (err) { }
+            try {
+                sock.destroy()
+            } catch (err) { }
+            settings.wsErrorHandler(err, req, sock, head)
+        }
     }
 
     const [httpServer, httpsServer] = await Promise.all([
@@ -119,6 +191,12 @@ export async function createBaseHttpServer(
             )
         }),
     ])
+
+    return {
+        settings: settings,
+        httpServer: httpServer,
+        httpsServer: httpsServer
+    }
 }
 
 export async function closeServer(
