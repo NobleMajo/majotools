@@ -1,4 +1,4 @@
-export type JsonBase = boolean | number | string | null // Json primitive types
+export type JsonBase = null | boolean | number | string // Json primitive types
 export type JsonHolder = JsonArray | JsonObject // A json object or array
 export type JsonArray = Array<JsonTypes> // A array with just json type values
 export type JsonObject = ObjectType<JsonTypes> // A object with just json type values
@@ -71,11 +71,17 @@ export function removeCircularObjects(
             } else {
                 objects.push(value)
                 if (Array.isArray(value)) {
-                    value = value.map((v) => removeCircularObjects(v, objects))
+                    value = value.map((v) => removeCircularObjects(
+                        v,
+                        objects
+                    ).value
+                    )
                 } else {
                     const value2: { [key: string]: any } = {}
                     for (const key of Object.keys(value)) {
-                        value2[key] = removeCircularObjects(value[key], objects)
+                        value2[key] = removeCircularObjects(
+                            value[key], objects
+                        ).value
                     }
                     value = value2
                 }
@@ -89,5 +95,9 @@ export function removeCircularObjects(
 }
 
 export function uniqueStringify(value: any): string {
-    return JSON.stringify(removeCircularObjects(value).value, null, 4)
+    return JSON.stringify(
+        removeCircularObjects(value).value,
+        null,
+        4
+    )
 }

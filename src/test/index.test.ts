@@ -1,9 +1,8 @@
 import "mocha"
 import { expect } from 'chai';
-
 import index from "../index"
 
-describe('index.string.replaceAll', () => {
+describe('string replaceAll', () => {
     it('check replaceAll with small word', () => {
         const word: string = "test"
         const search: string[] = ["st"]
@@ -38,7 +37,7 @@ describe('index.string.replaceAll', () => {
     })
 })
 
-describe('index.string.is*CharCode', () => {
+describe('string is*CharCode', () => {
     it('check isAlphaNumericCharCode', () => {
         expect(index.string.isAlphaNumericCharCode("a".charCodeAt(0))).to.be.true
         expect(index.string.isAlphaNumericCharCode("r".charCodeAt(0))).to.be.true
@@ -93,7 +92,7 @@ describe('index.string.is*CharCode', () => {
     })
 })
 
-describe('index.string.simplify', () => {
+describe('string simplify', () => {
     it('check simplify', () => {
         expect(index.string.simplify("012/345.67!89")).is.equals("012-345-67-89")
         expect(index.string.simplify("7ztd3_4zwl-94t8 z3l_4z cw-l8tzlrt")).is.equals("7ztd3-4zwl-94t8-z3l-4z-cw-l8tzlrt")
