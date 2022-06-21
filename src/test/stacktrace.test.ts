@@ -30,28 +30,28 @@ describe('getStackTrace()', async function () {
         )).is.equals(uniqueStringify([
             {
                 "method": "Context.<anonymous>",
-                "module": "?majotools/src/test/stacktrace.test.ts",
+                "module": "?src/test/stacktrace.test.ts",
                 "suffix": "",
                 "line": 11,
                 "char": 26
             },
             {
                 "method": "step",
-                "module": "?majotools/src/test/stacktrace.test.ts",
+                "module": "?src/test/stacktrace.test.ts",
                 "suffix": "",
                 "line": 33,
                 "char": 23
             },
             {
                 "method": "Object.next",
-                "module": "?majotools/src/test/stacktrace.test.ts",
+                "module": "?src/test/stacktrace.test.ts",
                 "suffix": "",
                 "line": 14,
                 "char": 53
             },
             {
                 "method": "none",
-                "module": "?majotools/src/test/stacktrace.test.ts",
+                "module": "?src/test/stacktrace.test.ts",
                 "suffix": " ",
                 "line": 8,
                 "char": 71
@@ -63,14 +63,14 @@ describe('getStackTrace()', async function () {
             },
             {
                 "method": "__awaiter",
-                "module": "?majotools/src/test/stacktrace.test.ts",
+                "module": "?src/test/stacktrace.test.ts",
                 "suffix": "",
                 "line": 4,
                 "char": 12
             },
             {
                 "method": "Context.<anonymous>",
-                "module": "?majotools/src/test/stacktrace.test.ts",
+                "module": "?src/test/stacktrace.test.ts",
                 "suffix": "",
                 "line": 47,
                 "char": 24
