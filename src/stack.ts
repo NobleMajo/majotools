@@ -1,3 +1,14 @@
+export function getStackTraceByError(
+  keepSource: boolean = false,
+): StackTraceElement[] {
+  return parseStackTraceElements(
+    new Error().stack,
+    true,
+    keepSource,
+    2
+  )
+}
+
 function buildStackTrace(): string {
   function bst(f) {
     return !f ?
@@ -33,7 +44,7 @@ export function getStackTrace(): string {
 }
 
 export interface StackTraceElement {
-  source: string,
+  source?: string,
   method?: string,
   module?: string,
   line?: number,
@@ -57,6 +68,7 @@ export const numbers: string[] = [
 
 export function parseStackTraceElement(
   src: string,
+  keepSource: boolean = false,
 ): StackTraceElement {
   if (src.includes("\n")) {
     src = src.split("\n").join(" ")
@@ -80,8 +92,9 @@ export function parseStackTraceElement(
       "'"
     )
   }
-  const ret: StackTraceElement = {
-    source: src,
+  const ret: StackTraceElement = {}
+  if (keepSource) {
+    ret.source = src
   }
   let index: number = src.indexOf("[")
   let index2: number = src.indexOf("]", index + 1)
@@ -112,10 +125,23 @@ export function parseStackTraceElement(
   index = src.indexOf("(")
   index2 = src.indexOf(")", index + 1)
   if (
+    (
+      index == -1 ||
+      index2 == -1
+    ) &&
+    src.includes(":")
+  ) {
+    src = "none (" + src + ") "
+    ret.method = undefined
+    index = src.indexOf("(")
+    index2 = src.indexOf(")", index + 1)
+  }
+
+  if (
     index != -1 &&
     index2 != -1
   ) {
-    if(!ret.method){
+    if (!ret.method) {
       ret.method = src.substring(0, index)
       while (ret.method.endsWith(" ")) {
         ret.method = ret.method.slice(0, -1)
@@ -184,7 +210,67 @@ export function parseStackTraceElement(
       }
     }
   } else {
-    throw new Error("String is not a stack trace element because '(' and ')' is missing!")
+    throw new Error(
+      "String is not a stack trace element because '(' and ')' is missing in:\n'" + src + "'"
+    )
   }
   return ret
+}
+
+export function parseStackTraceElements(
+  stack: string,
+  ignoreErrors: boolean = false,
+  keepSource: boolean = false,
+  skipLines: number = 0,
+): StackTraceElement[] {
+  return stack.split("\n")
+    .filter((v) => v.length != 0)
+    .slice(skipLines)
+    .map((v) => {
+      try {
+        return parseStackTraceElement(v, keepSource)
+      } catch (err) {
+        if (!ignoreErrors) {
+          throw err
+        }
+        return undefined
+      }
+    })
+    .filter((v) => v != undefined)
+}
+
+
+export function stringifyStackTraceElement(
+  element: StackTraceElement,
+): string {
+  let line = "at "
+  if (element.method) {
+    line += element.method + " "
+  }
+  let arr = []
+  if (element.module) {
+    arr.push(element.module)
+  }
+  if (element.line) {
+    arr.push(element.module)
+  }
+  if (element.char) {
+    arr.push(element.module)
+  }
+  if (arr.length != 0) {
+    line += "(" + arr.join(":") + ")"
+  }
+  if (element.suffix) {
+    line += " " + element.suffix
+  }
+  return line
+}
+
+export function stringifyStackTraceElements(
+  elements: StackTraceElement[],
+): string {
+  if (elements.length == 0) {
+    return ""
+  }
+  return "    " + elements.map((v) => stringifyStackTraceElement(v)).join("    \n") + "\n"
 }

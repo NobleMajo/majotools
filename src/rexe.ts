@@ -17,7 +17,6 @@ export interface RexeInstance {
 }
 
 export type RexeHttpMethod = "get" | "post" | "pust" | "patch" | "delete"
-
 export type RexeRequest = [
     string,
     ...JsonTypes[],

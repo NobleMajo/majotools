@@ -11,7 +11,6 @@ describe('parseStackTraceElement()', async function () {
                 exampleStackTraceElements.nodeStack
             )
         )).is.equals(uniqueStringify({
-            "source": "Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:77:12)",
             "method": "Function.executeUserEntryPoint",
             "as": "s runMain",
             "module": "node",
@@ -26,7 +25,6 @@ describe('parseStackTraceElement()', async function () {
                 exampleStackTraceElements.tsNodeStack
             )
         )).is.equals(uniqueStringify({
-            "source": "reportTSError (/home/codec/ws/main/npm/majotools/node_modules/ts-node/src/index.ts:847:19)",
             "method": "reportTSError",
             "module": "/home/codec/ws/main/npm/majotools/node_modules/ts-node/src/index.ts",
             "suffix": "",
@@ -41,7 +39,6 @@ describe('parseStackTraceElement()', async function () {
                 exampleStackTraceElements.newPromiseStack
             )
         )).is.equals(uniqueStringify({
-            "source": "new Promise (<anonymous>)",
             "method": "new Promise",
             "module": "<anonymous>",
             "suffix": "",
@@ -54,7 +51,6 @@ describe('parseStackTraceElement()', async function () {
                 exampleStackTraceElements.awaiterStack
             )
         )).is.equals(uniqueStringify({
-            "source": "__awaiter (src/test/stack.test.ts:4:12)",
             "method": "__awaiter",
             "module": "src/test/stack.test.ts",
             "suffix": "",
@@ -67,7 +63,8 @@ describe('parseStackTraceElement()', async function () {
         expect(() => parseStackTraceElement(
             exampleStackTraceElements.noneStack
         )).throws(
-            "String is not a stack trace element because '(' and ')' is missing!"
+            "String is not a stack trace element because '(' and ')' is missing in:\n" +
+            "'12     PKr123oEVkx xX123w Ei3232BhjbY  123    0O 3211'"
         )
     })
 
@@ -75,7 +72,8 @@ describe('parseStackTraceElement()', async function () {
         expect(() => parseStackTraceElement(
             exampleStackTraceElements.testCommand
         )).throws(
-            "String is not a stack trace element because '(' and ')' is missing!"
+            "String is not a stack trace element because '(' and ')' is missing in:\n" +
+            "'mocha --require ts-node/register src/test/**/*.test.ts'"
         )
     })
 })
