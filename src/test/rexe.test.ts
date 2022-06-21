@@ -4,7 +4,7 @@ import * as express from "express"
 import { createRexeMiddleware, createRexeObject, RexeInstance } from '../rexe'
 import { Server } from "http"
 import { expect } from 'chai'
-import { Awaitable } from '../../../../statefull/node/src/types'
+import { Awaitable } from "../httpMiddleware"
 
 export const serverRexe = {
     calc: (a: number, b: number) => a + b,
